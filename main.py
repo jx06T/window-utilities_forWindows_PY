@@ -14,8 +14,7 @@ if __name__ == "__main__":
         for i in TempFile["hide"]:
             if i  in  h:
                 file["hide"].append(i)
-                all[i] = {}
-                all[i]["hide"] = True
+                all[i] = {"top":False,"hide":True,"disabled":False,"alpha":0}
     except:
         pass
 

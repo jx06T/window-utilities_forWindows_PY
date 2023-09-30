@@ -86,7 +86,7 @@ def getall(type = False):
     return (ctx['titles'], ctx['hwnds'])    
     
 if __name__ == '__main__':
-    a = getall()
+    a = getall(True)
     print(a)
     x = input()
     # doDisabled(x)
