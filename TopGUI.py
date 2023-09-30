@@ -1,11 +1,8 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter.constants import *
-import sys
 from PIL import Image, ImageTk
-import os
 import win32gui
-import time
 import ControlWindow
 
 class TopGUI:
@@ -166,6 +163,8 @@ class TopGUI:
     def focusout(TopGuiSelf):
         if TopGuiSelf.canDestroy:
             TopGuiSelf.top.destroy()
+            TopGuiSelf.x = -100000000000000000
+            TopGuiSelf.y = -100000000000000000
             TopGuiSelf.canDestroy = "xxx"
 
 
