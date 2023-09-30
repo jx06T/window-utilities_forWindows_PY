@@ -7,6 +7,8 @@ import pyautogui
 import time
 import win32con
 import pickle
+from pynput import mouse
+import threading
 
 class MainGUI():
     def __init__(self, root, x, y, file,keys):
@@ -73,6 +75,21 @@ class MainGUI():
         self.window.after(1000, self.update)
         self.update()
 
+
+        def on_click(x, y, button, pressed):
+            if pressed:
+                if self.isShowTopGUI:
+                    if (x<self.TopGUI.x or x>self.TopGUI.x+120 or y<self.TopGUI.y or y>self.TopGUI.y+70 ):
+                        self.TopGUI.focusout()
+                        
+        def mouse_listener_thread():
+            with mouse.Listener(on_click=on_click) as listener:
+                listener.join() 
+
+        # 启动鼠标监听线程
+        mouse_thread = threading.Thread(target=mouse_listener_thread)
+        mouse_thread.start()
+
     def run(self):
         self.window.mainloop()
 
@@ -123,18 +140,19 @@ class MainGUI():
     def update(MainGuiSelf):
         MainGuiSelf.window.after(200, MainGuiSelf.update)
         MainGuiSelf.count += 1
-        x, y = pyautogui.position()
+        x, y = mouse.Controller().position
+        # x, y = pyautogui.position()
         if MainGuiSelf.count % 2 == 1:
             for i in MainGuiSelf.unstabler:
-                if MainGuiSelf.GUI:
-                    if MainGuiSelf.GUI.setAlphaing:
+                if MainGuiSelf.isShowTopGUI:
+                    if MainGuiSelf.TopGUI.setAlphaing:
                         continue
                 if IsIn(i,x,y):
                     ControlWindow.setAlpha(i,255)
                 else :
                     ControlWindow.setAlpha(i, 255- MainGuiSelf.all[i]["alpha"])
 
-        if MainGuiSelf.count % 5 == 0:
+        if MainGuiSelf.count % 4 == 0:
             NEWtitles, NEWhwnds = ControlWindow.getall()
             j = 0
             for i in MainGuiSelf.unstabler:
@@ -190,6 +208,8 @@ class MainGUI():
             if title == "":
                 return
             if MainGuiSelf.isShowTopGUI:
+                if abs(x-MainGuiSelf.TopGUI.x)<50 and abs(y-MainGuiSelf.TopGUI.y)<50:
+                    return    
                 MainGuiSelf.TopGUI.top.destroy()
                 MainGuiSelf.all,MainGuiSelf.hider,MainGuiSelf.unstabler = MainGuiSelf.TopGUI.GiveData()
             
@@ -206,7 +226,8 @@ class MainGUI():
             MainGuiSelf.isShowMyself+=1
             if MainGuiSelf.isShowMyself>2:
                 return
-            
+            print(MainGuiSelf.isShowMyself)
+            ControlWindow.doTop(MainGuiSelf.myhwnd)
             ControlWindow.movewindows(MainGuiSelf.myhwnd, x, y)
             ControlWindow.ShowWindows(MainGuiSelf.myhwnd)
 

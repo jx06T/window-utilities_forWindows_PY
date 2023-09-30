@@ -15,6 +15,8 @@ class TopGUI:
         self.allwindows = data["allwindows"]
         self.unstabler = data["unstabler"]        
         
+        self.x = x
+        self.y = y
         self.canDestroy = True
         self.setAlphaing = False
         top = tk.Toplevel(root)
@@ -31,8 +33,7 @@ class TopGUI:
         top.attributes('-topmost', True)
         top.overrideredirect(True)
         top.attributes("-alpha", 1)
-        top.after(100, top.focus_force)  
-        top.bind("<FocusOut>", lambda event: self.focusout())
+        # top.bind("<FocusOut>", lambda event: self.focusout())
         top.bind("<Map>", lambda event: self.update())
         
         self.top = top
