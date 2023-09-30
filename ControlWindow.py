@@ -76,12 +76,12 @@ def flashing(hwnd,t):
     win32gui.FlashWindow(hwnd,t)
     
 def enum_windows(hwnd, ctx):
-    if win32gui.IsWindow(hwnd) and win32gui.IsWindowEnabled(hwnd) and win32gui.IsWindowVisible(hwnd) and win32gui.GetWindowText(hwnd) != "":
+    if win32gui.IsWindow(hwnd) and win32gui.IsWindowEnabled(hwnd) and (win32gui.IsWindowVisible(hwnd) or ctx["type"]) and win32gui.GetWindowText(hwnd) != "":
         ctx["titles"].append(win32gui.GetWindowText(hwnd))
         ctx['hwnds'].append(hwnd)
 
-def getall():
-    ctx = {'titles': [], 'hwnds': []}
+def getall(type = False):
+    ctx = {'titles': [], 'hwnds': [],"type":type}
     win32gui.EnumWindows(enum_windows, ctx)
     return (ctx['titles'], ctx['hwnds'])    
     

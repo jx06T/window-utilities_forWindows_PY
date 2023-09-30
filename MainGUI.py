@@ -3,20 +3,18 @@ import win32gui
 import ControlWindow
 import keyboard
 import TopGUI
-import pyautogui
-import time
 import win32con
 import pickle
 from pynput import mouse
 import threading
 
 class MainGUI():
-    def __init__(self, root, x, y, file,keys):
+    def __init__(self, root, x, y, file,keys,all):
         self.isShowMyself = 0
         self.isShowTopGUI = 0
         self.count = -1
 
-        self.all = {}
+        self.all = all
         self.titles = []
         self.hwnds = []
         self.unstabler = []
@@ -71,17 +69,23 @@ class MainGUI():
         self.button.bind("<Button-1>", lambda event: self.close())
         self.button.pack(side=tk.RIGHT)
 
-        self.window.bind("<FocusOut>", lambda event: self.focusout())
+        # self.window.bind("<FocusOut>", lambda event: self.focusout())
         self.window.after(1000, self.update)
         self.update()
 
 
         def on_click(x, y, button, pressed):
+            if self.isShowMyself == "xxx":
+                return False
             if pressed:
                 if self.isShowTopGUI:
                     if (x<self.TopGUI.x or x>self.TopGUI.x+120 or y<self.TopGUI.y or y>self.TopGUI.y+70 ):
                         self.TopGUI.focusout()
-                        
+
+                # if self.isShowMyself==1:
+                    # if not IsIn(self.myhwnd,x,y):
+                        # self.focusout()
+
         def mouse_listener_thread():
             with mouse.Listener(on_click=on_click) as listener:
                 listener.join() 
@@ -94,13 +98,13 @@ class MainGUI():
         self.window.mainloop()
 
     def focusout(MainGuiSelf):
-        MainGuiSelf.isShowMyself = 0
         ControlWindow.HideWindows(MainGuiSelf.myhwnd)
+        MainGuiSelf.isShowMyself = 0
 
     def click(MainGuiSelf):
         n, = MainGuiSelf.mylist.curselection()  # 取得項目索引值，因為是單選，回傳 (i,)，所以使用 n, 取值
-
         ControlWindow.ShowWindows(MainGuiSelf.hwnds[n])
+        
         try:
             win32gui.SetForegroundWindow(MainGuiSelf.hwnds[n])
         except:
@@ -113,11 +117,6 @@ class MainGUI():
     def click1(MainGuiSelf):
         n, = MainGuiSelf.mylist.curselection()
         ccc = MainGuiSelf.titles[n]
-        if MainGuiSelf.hwnds[n] in MainGuiSelf.all:
-            if MainGuiSelf.all[MainGuiSelf.hwnds[n]]["hide"]:
-                MainGuiSelf.label1.configure(text="(hiding)"+ccc[:15]+"...")
-                return
-        MainGuiSelf.label1.configure(text=ccc[:20]+"...")
         if ccc == "控制台!":
             MainGuiSelf.b2 = tk.Button(MainGuiSelf.bottom_frame, text="Exit EXE",background="#cc0033")
             MainGuiSelf.b2.pack_propagate(False)
@@ -129,12 +128,19 @@ class MainGUI():
             except:
                 pass
 
+        if MainGuiSelf.hwnds[n] in MainGuiSelf.all:
+            if MainGuiSelf.all[MainGuiSelf.hwnds[n]]["hide"]:
+                MainGuiSelf.label1.configure(text="(hiding)"+ccc[:15]+"...")
+                return
+        MainGuiSelf.label1.configure(text=ccc[:20]+"...")
+
     def close(MainGuiSelf):
         n, = MainGuiSelf.mylist.curselection()
         hwnd = MainGuiSelf.hwnds[n]
         win32gui.PostMessage(hwnd, win32con.WM_CLOSE, 0, 0)
 
     def destroy(MainGuiSelf):
+        MainGuiSelf.isShowMyself = "xxx"
         MainGuiSelf.window.destroy()
 
     def update(MainGuiSelf):
@@ -201,6 +207,7 @@ class MainGUI():
             if MainGuiSelf.TopGUI.canDestroy == "xxx":
                 MainGuiSelf.all,MainGuiSelf.hider,MainGuiSelf.unstabler = MainGuiSelf.TopGUI.GiveData()
                 store(MainGuiSelf.file,"hide", MainGuiSelf.hider)
+                MainGuiSelf.TopGUI.canDestroy = False
 
         if keyboard.is_pressed(MainGuiSelf.keys[0]):
             hwnd = win32gui.GetForegroundWindow()
@@ -212,24 +219,30 @@ class MainGUI():
                     return    
                 MainGuiSelf.TopGUI.top.destroy()
                 MainGuiSelf.all,MainGuiSelf.hider,MainGuiSelf.unstabler = MainGuiSelf.TopGUI.GiveData()
-            
-            store(MainGuiSelf.file,"hide", MainGuiSelf.hider)
+                store(MainGuiSelf.file,"hide", MainGuiSelf.hider)
 
             MainGuiSelf.isShowTopGUI = True
             MainGuiSelf.TopGUI  = TopGUI.TopGUI(MainGuiSelf.window,x, y,{"hwnd":hwnd,"hider":MainGuiSelf.hider,"allwindows":MainGuiSelf.all,"unstabler":MainGuiSelf.unstabler})
 
-        if keyboard.is_pressed(MainGuiSelf.keys[1]):
-            if MainGuiSelf.isShowTopGUI:
-                MainGuiSelf.all,MainGuiSelf.hider,MainGuiSelf.unstabler = MainGuiSelf.TopGUI.GiveData()
-                store(MainGuiSelf.file,"hide", MainGuiSelf.hider)
 
-            MainGuiSelf.isShowMyself+=1
-            if MainGuiSelf.isShowMyself>2:
+        if keyboard.is_pressed(MainGuiSelf.keys[1]):
+            if MainGuiSelf.isShowMyself ==-1:
+                MainGuiSelf.focusout()
+                MainGuiSelf.isShowMyself = -2
                 return
-            print(MainGuiSelf.isShowMyself)
+
+            if not MainGuiSelf.isShowMyself == 0 :
+                return
+
+            MainGuiSelf.isShowMyself = 2
             ControlWindow.doTop(MainGuiSelf.myhwnd)
             ControlWindow.movewindows(MainGuiSelf.myhwnd, x, y)
             ControlWindow.ShowWindows(MainGuiSelf.myhwnd)
+
+        if MainGuiSelf.isShowMyself== -2 and not keyboard.is_pressed(MainGuiSelf.keys[1]):
+            MainGuiSelf.isShowMyself=0
+        if MainGuiSelf.isShowMyself== 2 and not keyboard.is_pressed(MainGuiSelf.keys[1]):
+            MainGuiSelf.isShowMyself=-1
 
     def initial(MainGuiSelf):
         MainGuiSelf.myhwnd = win32gui.FindWindow(None, '控制台!')        
@@ -237,6 +250,7 @@ class MainGUI():
             ControlWindow.HideWindows(MainGuiSelf.myhwnd)
 
     def CloseButton(MainGuiSelf):
+        MainGuiSelf.isShowMyself = 0
         ControlWindow.HideWindows(MainGuiSelf.myhwnd)
         
 

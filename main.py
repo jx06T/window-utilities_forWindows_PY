@@ -1,23 +1,26 @@
 import tkinter as tk
 import ControlWindow
 import pyautogui
-import time
 import pickle
 import MainGUI
 
 if __name__ == "__main__":
-
+    all = {}
     file = {'hide': []}
     try:
         with open('hider.pickle', 'rb') as f:
-            file = pickle.load(f)
-        t, h = ControlWindow.getall()
-        for i in file["hide"]:
-            if i not in h:
-                file["hide"].remove(i)
+            TempFile = pickle.load(f)
+        t, h = ControlWindow.getall(True)
+        for i in TempFile["hide"]:
+            if i  in  h:
+                file["hide"].append(i)
+                all[i] = {}
+                all[i]["hide"] = True
     except:
-        with open('hider.pickle', 'wb') as f:
-            pickle.dump(file, f)
+        pass
+
+    with open('hider.pickle', 'wb') as f:
+        pickle.dump(file, f)
 
     key1 = "ctrl+alt+d"
     key2 = "ctrl+alt+s"
@@ -35,5 +38,5 @@ if __name__ == "__main__":
     x = int(w/2)-170
     y = int(h/2)-120
 
-    a = MainGUI.MainGUI(root, x, y, file,[key1,key2])
+    a = MainGUI.MainGUI(root, x, y, file,[key1,key2],all)
     a.run()
