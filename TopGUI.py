@@ -9,17 +9,17 @@ import time
 import ControlWindow
 
 class TopGUI:
-    def __init__(self, x, y, top, hwnd,windows,hinder,u):
-        self.hwnd = hwnd
-        self.hinder = hinder
-        self.windows = windows
+    def __init__(self, root,x,y,data):
+        self.hwnd = data["hwnd"]
+        self.hider = data["hider"]
+        self.allwindows = data["allwindows"]
+        self.unstabler = data["unstabler"]        
+        
         self.canDestroy = True
-        self.unstabler = u
         self.setAlphaing = False
-        top = tk.Toplevel(top)
+        top = tk.Toplevel(root)
 
         top.geometry("120x70+"+str(x)+"+"+str(y))
-        # top.geometry("120x66+"+str(0)+"+"+str(0))
         top.minsize(120, 1)
         top.maxsize(1924, 1781)
         top.resizable(0,  0)
@@ -31,9 +31,10 @@ class TopGUI:
         top.attributes('-topmost', True)
         top.overrideredirect(True)
         top.attributes("-alpha", 1)
+        top.after(100, top.focus_force)  
         top.bind("<FocusOut>", lambda event: self.focusout())
         top.bind("<Map>", lambda event: self.update())
-
+        
         self.top = top
         """---------------------------------------------------------------------------------"""
         self.frame = tk.Frame(self.top, width=300,
@@ -41,6 +42,7 @@ class TopGUI:
         self.frame.configure(background="#d9d9d9")
         self.frame.configure(highlightbackground="#d9d9d9")
         self.frame.pack(expand=True)
+      
         """---------------------------------------------------------------------------------"""
         self.img1 = Image.open(r"imgs\top.png")
         self.img1 = self.img1.resize((22, 22))
@@ -85,10 +87,10 @@ class TopGUI:
         self.Button2.configure(highlightcolor="black")
         self.Button2.configure(pady="0")
 
-        self.Button2.bind("<Button-1>", lambda event: self.doHind())
+        self.Button2.bind("<Button-1>", lambda event: self.doHide())
         self.Button2.bind("<ButtonRelease>", lambda event: self.update())
         """---------------------------------------------------------------------------------"""
-        self.img3 = Image.open(r"imgs\hind.png")
+        self.img3 = Image.open(r"imgs\hide.png")
         self.img3 = self.img3.resize((22, 22))
         self.img3 = ImageTk.PhotoImage(self.img3)
 
@@ -150,108 +152,100 @@ class TopGUI:
         self.TScale1.configure(takefocus="")
         self.TScale1.bind("<B1-Motion>", lambda event: self.setAlpha())
         self.TScale1.bind("<ButtonRelease-1>", lambda event: self.update())
+       
 
-        """---------------------------------------------------------------------------------"""
-        '''
-        self.img4 = Image.open(r"imgs\alpha.png")
-        self.img4 = self.img4.resize((25, 22))
-        self.img4 = ImageTk.PhotoImage(self.img4)
 
-        self.Label1 = tk.Label(self.top, image=self.img4)
-        self.Label1.place(relx=0.050, rely=0.530, height=28, width=34)
-        self.Label1.configure(anchor='w')
-        self.Label1.configure(background="#d9d9d9")
-        self.Label1.configure(compound='left')
-        self.Label1.configure(disabledforeground="#a3a3a3")
-        self.Label1.configure(foreground="#000000")
-        '''
 
-        
+    def GiveData(TopGuiSelf):
+        return (TopGuiSelf.allwindows,TopGuiSelf.hider,TopGuiSelf.unstabler)
 
     def start(self):
-        # print("dddddddddddseu3999d")
         self.top.mainloop()
+        
+    def focusout(TopGuiSelf):
+        if TopGuiSelf.canDestroy:
+            TopGuiSelf.top.destroy()
+            TopGuiSelf.canDestroy = "xxx"
 
-    def focusout(a):
-        if a.canDestroy:
-            print("dddddddddddddddddddd")
-            a.top.destroy()
-            a.canDestroy = "xxx"
 
-    def doTop(a):
-        a.canDestroy = False
-        if a.windows[a.hwnd]["top"]:
-            ControlWindow.reset(a.hwnd)
-            a.windows[a.hwnd]["top"] = False
+    def doTop(TopGuiSelf):
+        TopGuiSelf.canDestroy = False
+        if TopGuiSelf.allwindows[TopGuiSelf.hwnd]["top"]:
+            ControlWindow.reset(TopGuiSelf.hwnd)
+            TopGuiSelf.allwindows[TopGuiSelf.hwnd]["top"] = False
         else:
-            ControlWindow.doTop(a.hwnd)
-            a.windows[a.hwnd]["top"] = True            
+            ControlWindow.doTop(TopGuiSelf.hwnd)
+            TopGuiSelf.allwindows[TopGuiSelf.hwnd]["top"] = True            
 
-    def doHind(a):
-        a.canDestroy = False
-        if a.windows[a.hwnd]["hind"]:
-            ControlWindow.ShowWindows(a.hwnd)
-            a.windows[a.hwnd]["hind"]=False
-            a.hinder.remove(a.hwnd)
+    def doHide(TopGuiSelf):
+        TopGuiSelf.canDestroy = False
+        if TopGuiSelf.allwindows[TopGuiSelf.hwnd]["hide"]:
+            ControlWindow.ShowWindows(TopGuiSelf.hwnd)
+            TopGuiSelf.allwindows[TopGuiSelf.hwnd]["hide"]=False
+            TopGuiSelf.hider.remove(TopGuiSelf.hwnd)
         else:
-            ControlWindow.HindWindows(a.hwnd)
-            a.windows[a.hwnd]["hind"] = True
-            a.hinder.append(a.hwnd)
+            ControlWindow.HideWindows(TopGuiSelf.hwnd)
+            TopGuiSelf.allwindows[TopGuiSelf.hwnd]["hide"] = True
+            TopGuiSelf.hider.append(TopGuiSelf.hwnd)
 
-    def doDisabled(a):
-        a.canDestroy = False
-        if a.windows[a.hwnd]["disabled"]:
-            ControlWindow.doAbled(a.hwnd)
-            a.windows[a.hwnd]["disabled"] = False
+    def doDisabled(TopGuiSelf):
+        TopGuiSelf.canDestroy = False
+        if TopGuiSelf.allwindows[TopGuiSelf.hwnd]["disabled"]:
+            ControlWindow.doAbled(TopGuiSelf.hwnd)
+            TopGuiSelf.allwindows[TopGuiSelf.hwnd]["disabled"] = False
         else:
-            ControlWindow.doDisabled(a.hwnd)
-            a.windows[a.hwnd]["disabled"] = True
-    def setAlpha(a):
-        value = 255-int(a.TScale1.get())
-        ControlWindow.setAlpha(a.hwnd,value)
-        a.windows[a.hwnd]["alpha"] = 255-value    
-        a.setAlphaing = True  
-    def dounstabler(a):
-        if a.hwnd in a.unstabler:
-            ControlWindow.setAlpha(a.hwnd, 255- a.windows[a.hwnd]["alpha"])
-            a.unstabler.remove(a.hwnd)
+            ControlWindow.doDisabled(TopGuiSelf.hwnd)
+            TopGuiSelf.allwindows[TopGuiSelf.hwnd]["disabled"] = True
+            
+    def setAlpha(TopGuiSelf):
+        value = 255-int(TopGuiSelf.TScale1.get())
+        ControlWindow.setAlpha(TopGuiSelf.hwnd,value)
+        TopGuiSelf.allwindows[TopGuiSelf.hwnd]["alpha"] = 255-value    
+        TopGuiSelf.setAlphaing = True  
+        
+    def dounstabler(TopGuiSelf):
+        if TopGuiSelf.hwnd in TopGuiSelf.unstabler:
+            ControlWindow.setAlpha(TopGuiSelf.hwnd, 255- TopGuiSelf.allwindows[TopGuiSelf.hwnd]["alpha"])
+            TopGuiSelf.unstabler.remove(TopGuiSelf.hwnd)
         else:
-            a.unstabler.append(a.hwnd)
-    def delayupdate(a):
-        a.top.after(100, a.update())
+            TopGuiSelf.unstabler.append(TopGuiSelf.hwnd)
 
+    def delayupdate(TopGuiSelf):
+        TopGuiSelf.top.after(100, TopGuiSelf.update())
     
-    def update(a):
-        a.setAlphaing = False
-        if not  a.hwnd in a.windows:
-           a.windows[a.hwnd] = {"top":False,"hind":False,"disabled":False,"alpha":0}
+    def update(TopGuiSelf):
+        TopGuiSelf.setAlphaing = False
+        if not  TopGuiSelf.hwnd in TopGuiSelf.allwindows:
+           TopGuiSelf.allwindows[TopGuiSelf.hwnd] = {"top":False,"hide":False,"disabled":False,"alpha":0}
 
-        this = a.windows[a.hwnd]
-        if a.hwnd in a.unstabler:
-            a.Button4.configure(image=a.img4B)
+        this = TopGuiSelf.allwindows[TopGuiSelf.hwnd]
+        if TopGuiSelf.hwnd in TopGuiSelf.unstabler:
+            TopGuiSelf.Button4.configure(image=TopGuiSelf.img4B)
         else:
-            a.Button4.configure(image=a.img4)
+            TopGuiSelf.Button4.configure(image=TopGuiSelf.img4)
         if this["top"]:
-            a.Button1.configure(image=a.img1B)
+            TopGuiSelf.Button1.configure(image=TopGuiSelf.img1B)
         else:
-            a.Button1.configure(image=a.img1)
-        if this["hind"]:
-            a.Button2.configure(image=a.img2)
+            TopGuiSelf.Button1.configure(image=TopGuiSelf.img1)
+        if this["hide"]:
+            TopGuiSelf.Button2.configure(image=TopGuiSelf.img2)
         else:
-            a.Button2.configure(image=a.img2B)
+            TopGuiSelf.Button2.configure(image=TopGuiSelf.img2B)
         if this["disabled"]:
-            a.Button3.configure(image=a.img3B)
+            TopGuiSelf.Button3.configure(image=TopGuiSelf.img3B)
         else:
-            a.Button3.configure(image=a.img3)
-        a.TScale1.set(this["alpha"])
+            TopGuiSelf.Button3.configure(image=TopGuiSelf.img3)
+        TopGuiSelf.TScale1.set(this["alpha"])
         try:
             hwnd = win32gui.FindWindow(None, 'Toplevel')
             win32gui.SetForegroundWindow(hwnd)
             ControlWindow.doTop(hwnd)
-            a.canDestroy = True
+            TopGuiSelf.canDestroy = True
         except:
             pass
+
+        
 if __name__ == "__main__":
     a =tk.Tk()
-    a = TopGUI(300,300,a,[],[],[],[])
+    a = TopGUI(a,300,300,{"hwnd":[],"hider":[],"allwindows":{},"unstabler":[]})
     a.start()

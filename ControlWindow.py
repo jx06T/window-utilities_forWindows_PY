@@ -4,13 +4,14 @@ import win32api
 import time
 
 
-def HindWindows(hwnd):
+def HideWindows(hwnd):
     win32gui.ShowWindow(hwnd, 0)
 
 
 def ShowWindows(hwnd):
+    # win32gui.ShowWindow(hwnd, win32con.SW_SHOWNORMAL)
     win32gui.ShowWindow(hwnd, 5)
-    
+
 def doTop(hwnd):
     win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 0, 0, 0, 0,
                           win32con.SWP_NOOWNERZORDER | win32con.SWP_NOSIZE | win32con.SWP_NOMOVE)
@@ -73,8 +74,21 @@ def big(hwnd):
 
 def flashing(hwnd,t):
     win32gui.FlashWindow(hwnd,t)
+    
+def enum_windows(hwnd, ctx):
+    if win32gui.IsWindow(hwnd) and win32gui.IsWindowEnabled(hwnd) and win32gui.IsWindowVisible(hwnd) and win32gui.GetWindowText(hwnd) != "":
+        ctx["titles"].append(win32gui.GetWindowText(hwnd))
+        ctx['hwnds'].append(hwnd)
+
+def getall():
+    ctx = {'titles': [], 'hwnds': []}
+    win32gui.EnumWindows(enum_windows, ctx)
+    return (ctx['titles'], ctx['hwnds'])    
+    
 if __name__ == '__main__':
-    x = 2622632
+    a = getall()
+    print(a)
+    x = input()
     # doDisabled(x)
     # doAbled(x)
     # HindWindows(x)
