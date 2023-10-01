@@ -16,6 +16,11 @@ class TopGUI:
         self.y = y
         self.canDestroy = True
         self.setAlphaing = False
+        self.top = None
+
+        if root == None:
+            self.update()
+            return
         top = tk.Toplevel(root)
 
         top.geometry("120x70+"+str(x)+"+"+str(y))
@@ -30,7 +35,7 @@ class TopGUI:
         top.attributes('-topmost', True)
         top.overrideredirect(True)
         top.attributes("-alpha", 1)
-        # top.bind("<FocusOut>", lambda event: self.focusout())
+        top.bind("<FocusOut>", lambda event: self.focusout())
         top.bind("<Map>", lambda event: self.update())
         
         self.top = top
@@ -217,7 +222,8 @@ class TopGUI:
         TopGuiSelf.setAlphaing = False
         if not  TopGuiSelf.hwnd in TopGuiSelf.allwindows:
            TopGuiSelf.allwindows[TopGuiSelf.hwnd] = {"top":False,"hide":False,"disabled":False,"alpha":0}
-
+        if TopGuiSelf.top == None:
+            return
         this = TopGuiSelf.allwindows[TopGuiSelf.hwnd]
         if TopGuiSelf.hwnd in TopGuiSelf.unstabler:
             TopGuiSelf.Button4.configure(image=TopGuiSelf.img4B)

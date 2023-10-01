@@ -10,8 +10,10 @@ import threading
 
 class MainGUI():
     def __init__(self, root, x, y, file,keys,all):
+        print(keys)
         self.isShowMyself = 0
         self.isShowTopGUI = 0
+        self.isFast = False
         self.count = -1
 
         self.all = all
@@ -70,7 +72,7 @@ class MainGUI():
         self.button.pack(side=tk.RIGHT)
 
         # self.window.bind("<FocusOut>", lambda event: self.focusout())
-        self.window.after(1000, self.update)
+        self.window.after(500, self.update)
         self.update()
 
 
@@ -210,8 +212,7 @@ class MainGUI():
                 MainGuiSelf.TopGUI.canDestroy = False
 
         if keyboard.is_pressed(MainGuiSelf.keys[0]):
-            hwnd = win32gui.GetForegroundWindow()
-            title = win32gui.GetWindowText(hwnd)
+            hwnd,title  = ControlWindow.GetNowWindows()
             if title == "":
                 return
             if MainGuiSelf.isShowTopGUI:
@@ -223,7 +224,6 @@ class MainGUI():
 
             MainGuiSelf.isShowTopGUI = True
             MainGuiSelf.TopGUI  = TopGUI.TopGUI(MainGuiSelf.window,x, y,{"hwnd":hwnd,"hider":MainGuiSelf.hider,"allwindows":MainGuiSelf.all,"unstabler":MainGuiSelf.unstabler})
-
 
         if keyboard.is_pressed(MainGuiSelf.keys[1]):
             if MainGuiSelf.isShowMyself ==-1:
@@ -241,8 +241,42 @@ class MainGUI():
 
         if MainGuiSelf.isShowMyself== -2 and not keyboard.is_pressed(MainGuiSelf.keys[1]):
             MainGuiSelf.isShowMyself=0
+
         if MainGuiSelf.isShowMyself== 2 and not keyboard.is_pressed(MainGuiSelf.keys[1]):
             MainGuiSelf.isShowMyself=-1
+
+        iskey2 = False
+        iskey3 = False
+        try:
+            iskey2 = keyboard.is_pressed(MainGuiSelf.keys[2])
+        except:
+            pass
+
+        try:
+            iskey3 = keyboard.is_pressed(MainGuiSelf.keys[3])
+        except:
+            pass
+
+        if  iskey2 or iskey3 :
+            hwnd,title  = ControlWindow.GetNowWindows()
+            if title == "" or MainGuiSelf.isFast:
+                return
+            MainGuiSelf.isFast = True
+            if MainGuiSelf.isShowTopGUI:
+                MainGuiSelf.TopGUI.top.destroy()
+                MainGuiSelf.all,MainGuiSelf.hider,MainGuiSelf.unstabler = MainGuiSelf.TopGUI.GiveData()
+                store(MainGuiSelf.file,"hide", MainGuiSelf.hider)
+                
+            MainGuiSelf.TopGUI  = TopGUI.TopGUI(None,x, y,{"hwnd":hwnd,"hider":MainGuiSelf.hider,"allwindows":MainGuiSelf.all,"unstabler":MainGuiSelf.unstabler})
+            if iskey2:
+                MainGuiSelf.TopGUI.doTop()
+            else:        
+                MainGuiSelf.TopGUI.doHide()
+            MainGuiSelf.all,MainGuiSelf.hider,MainGuiSelf.unstabler = MainGuiSelf.TopGUI.GiveData()
+            store(MainGuiSelf.file,"hide", MainGuiSelf.hider)
+
+        if MainGuiSelf.isFast and not iskey2 and not iskey3:
+            MainGuiSelf.isFast = False
 
     def initial(MainGuiSelf):
         MainGuiSelf.myhwnd = win32gui.FindWindow(None, '控制台!')        

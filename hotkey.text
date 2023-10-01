@@ -2,3 +2,7 @@ display tool:
 ctrl+alt+d
 display control panel:
 ctrl+alt+e
+sticky window:
+ctrl+alt+t
+invisible window:
+ctrl+alt+h

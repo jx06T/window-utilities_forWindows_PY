@@ -1,6 +1,6 @@
 # window-utilities_forWindows_PY
  更靈活方便的操作windows視窗
-###### *version-V2.0* 
+###### *version-V2.1* 
 ---
 ## 簡介&功能
 
@@ -10,13 +10,15 @@
 2. 呼叫視 **窗切換工具**
     - 快捷鍵 **ctrl+alt+e** 可至 [**hotkey.text**](hotkey.text) 設定
     
-3. 置頂視窗
+3. 置頂視窗 
     - 叫出 **彈出工具** 後點選按鈕
     - ![image](imgs/notop.png)　　![image](imgs/top.png)
+    - （快捷鍵 **ctrl+alt+t** 可至 [**hotkey.text**](hotkey.text) 設定）
     
 4. 隱藏視窗
     - 叫出 **彈出工具** 後點選按鈕
     - ![image](imgs/Ceye.png)　　![image](imgs/eye.png)
+    - （快捷鍵 **ctrl+alt+h** 可至 [**hotkey.text**](hotkey.text) 設定）
     
 5. 忽略視窗（忽略後滑鼠會略過那個視窗點擊到後面的）
     - 叫出 **彈出工具** 後點選按鈕
@@ -49,12 +51,12 @@
 - 嘗試將視窗 **置頂** 並 **忽略視窗**
     
 ## 更新
-- 不定期更新需自行至此重新安裝(目前版本2.0)
+- 不定期更新需自行至此重新安裝(目前版本2.1)
 
 ## 待辦
-- 純快速鍵置頂及隱藏
-- 其他狀態的保存
+- 暫無
 
 ## 更新日誌
+    2023/10/02 (2.1) -> 加入純快速鍵的置頂和隱藏
     2023/09/30 (2.0) -> 更改1.0架構並修復bug提交到Github
     

@@ -85,9 +85,15 @@ def getall(type = False):
     win32gui.EnumWindows(enum_windows, ctx)
     return (ctx['titles'], ctx['hwnds'])    
     
+def GetNowWindows():
+    hwnd = win32gui.GetForegroundWindow()
+    title = win32gui.GetWindowText(hwnd)
+    return (hwnd,title)
+
 if __name__ == '__main__':
     a = getall(True)
-    print(a)
+    b = GetNowWindows()
+    print(b,a)
     x = input()
     # doDisabled(x)
     # doAbled(x)
