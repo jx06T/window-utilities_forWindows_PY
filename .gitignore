@@ -2,3 +2,5 @@ old
 __pycache__
 Pipfile
 main.spec
+dist
+build

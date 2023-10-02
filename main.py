@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
     with open('hider.pickle', 'wb') as f:
         pickle.dump(file, f)
-
+    print(file)
     keys = ["ctrl+alt+d","ctrl+alt+s","ctrl+alt+t","ctrl+alt+h"]
     try:
         f = open('hotkey.text', encoding='UTF-8')

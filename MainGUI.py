@@ -4,7 +4,6 @@ import ControlWindow
 import keyboard
 import TopGUI
 import win32con
-import pickle
 from pynput import mouse
 import threading
 
@@ -115,6 +114,7 @@ class MainGUI():
             MainGuiSelf.all[MainGuiSelf.hwnds[n]]["hide"] = False
             if MainGuiSelf.hwnds[n] in MainGuiSelf.hider:
                 MainGuiSelf.hider.remove(MainGuiSelf.hwnds[n])
+            TopGUI.store("hide", MainGuiSelf.hider)
 
     def click1(MainGuiSelf):
         n, = MainGuiSelf.mylist.curselection()
@@ -208,19 +208,17 @@ class MainGUI():
         if MainGuiSelf.isShowTopGUI:
             if MainGuiSelf.TopGUI.canDestroy == "xxx":
                 MainGuiSelf.all,MainGuiSelf.hider,MainGuiSelf.unstabler = MainGuiSelf.TopGUI.GiveData()
-                store(MainGuiSelf.file,"hide", MainGuiSelf.hider)
                 MainGuiSelf.TopGUI.canDestroy = False
 
         if keyboard.is_pressed(MainGuiSelf.keys[0]):
             hwnd,title  = ControlWindow.GetNowWindows()
-            if title == "":
+            if title == "Program Manager" or  title == "":
                 return
             if MainGuiSelf.isShowTopGUI:
                 if abs(x-MainGuiSelf.TopGUI.x)<50 and abs(y-MainGuiSelf.TopGUI.y)<50:
                     return    
                 MainGuiSelf.TopGUI.top.destroy()
                 MainGuiSelf.all,MainGuiSelf.hider,MainGuiSelf.unstabler = MainGuiSelf.TopGUI.GiveData()
-                store(MainGuiSelf.file,"hide", MainGuiSelf.hider)
 
             MainGuiSelf.isShowTopGUI = True
             MainGuiSelf.TopGUI  = TopGUI.TopGUI(MainGuiSelf.window,x, y,{"hwnd":hwnd,"hider":MainGuiSelf.hider,"allwindows":MainGuiSelf.all,"unstabler":MainGuiSelf.unstabler})
@@ -259,13 +257,13 @@ class MainGUI():
 
         if  iskey2 or iskey3 :
             hwnd,title  = ControlWindow.GetNowWindows()
-            if title == "" or MainGuiSelf.isFast:
+            if title == "Program Manager" or title == "" or MainGuiSelf.isFast:
                 return
             MainGuiSelf.isFast = True
             if MainGuiSelf.isShowTopGUI:
                 MainGuiSelf.TopGUI.top.destroy()
                 MainGuiSelf.all,MainGuiSelf.hider,MainGuiSelf.unstabler = MainGuiSelf.TopGUI.GiveData()
-                store(MainGuiSelf.file,"hide", MainGuiSelf.hider)
+                MainGuiSelf.isShowTopGUI = False
                 
             MainGuiSelf.TopGUI  = TopGUI.TopGUI(None,x, y,{"hwnd":hwnd,"hider":MainGuiSelf.hider,"allwindows":MainGuiSelf.all,"unstabler":MainGuiSelf.unstabler})
             if iskey2:
@@ -273,7 +271,6 @@ class MainGUI():
             else:        
                 MainGuiSelf.TopGUI.doHide()
             MainGuiSelf.all,MainGuiSelf.hider,MainGuiSelf.unstabler = MainGuiSelf.TopGUI.GiveData()
-            store(MainGuiSelf.file,"hide", MainGuiSelf.hider)
 
         if MainGuiSelf.isFast and not iskey2 and not iskey3:
             MainGuiSelf.isFast = False
@@ -292,8 +289,3 @@ class MainGUI():
 def IsIn(hwnd, x, y):
     left, top, right, bottom = win32gui.GetWindowRect(hwnd)
     return (x > left and x < right and y < bottom and y > top)
-
-def store(file,n, v):
-    file[n] = v
-    with open('hider.pickle', 'wb') as f:
-        pickle.dump(file, f)

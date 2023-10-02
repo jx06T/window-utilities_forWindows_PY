@@ -4,6 +4,7 @@ from tkinter.constants import *
 from PIL import Image, ImageTk
 import win32gui
 import ControlWindow
+import pickle
 
 class TopGUI:
     def __init__(self, root,x,y,data):
@@ -188,10 +189,12 @@ class TopGUI:
             ControlWindow.ShowWindows(TopGuiSelf.hwnd)
             TopGuiSelf.allwindows[TopGuiSelf.hwnd]["hide"]=False
             TopGuiSelf.hider.remove(TopGuiSelf.hwnd)
+            store("hide", TopGuiSelf.hider)
         else:
             ControlWindow.HideWindows(TopGuiSelf.hwnd)
             TopGuiSelf.allwindows[TopGuiSelf.hwnd]["hide"] = True
             TopGuiSelf.hider.append(TopGuiSelf.hwnd)
+            store("hide", TopGuiSelf.hider)
 
     def doDisabled(TopGuiSelf):
         TopGuiSelf.canDestroy = False
@@ -250,7 +253,20 @@ class TopGUI:
         except:
             pass
 
-        
+def store(name, value):
+    file = {'hide': []}
+    try:
+        with open('hider.pickle', 'rb') as f:
+            file = pickle.load(f)
+    except:
+        pass
+
+    file[name] = value
+    print(file)
+    with open('hider.pickle', 'wb') as f:
+        pickle.dump(file, f)
+
+
 if __name__ == "__main__":
     a =tk.Tk()
     a = TopGUI(a,300,300,{"hwnd":[],"hider":[],"allwindows":{},"unstabler":[]})
