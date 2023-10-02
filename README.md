@@ -7,7 +7,7 @@
 1. 呼叫 **彈出工具**
     - 快捷鍵 **ctrl+alt+d** 可至 [**hotkey.text**](hotkey.text) 設定
 
-2. 呼叫視 **窗切換工具**
+2. 呼叫 **視窗切換工具**
     - 快捷鍵 **ctrl+alt+e** 可至 [**hotkey.text**](hotkey.text) 設定
     
 3. 置頂視窗 
