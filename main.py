@@ -31,7 +31,7 @@ if __name__ == "__main__":
         keys[3] = allText[7]
     except:
         with open('hotkey.text', 'a+', encoding='UTF-8') as f:
-            f.write("display tool:\nctrl+alt+d\ndisplay control panel:\nctrl+alt+s")
+            f.write("display tool:\nctrl+alt+d\ndisplay control panel:\nctrl+alt+s\nsticky window:\nctrl+alt+t\ninvisible window:\nctrl+alt+h")
 
     root = tk.Tk()
     w, h = pyautogui.size()
